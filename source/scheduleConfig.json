@@ -1,0 +1,34 @@
+{
+  "setting": [
+    {
+      "url": "http://10.132.23.123:81/Function/ENG1/Bonding_Output.aspx",
+      "fileName": "Bonding_Report",
+      "folderPath": "Z:\\02-共用資料區(3G)\\03-戰情\\3F_Bonding\\Daily",
+      "time": [
+        "08:30",
+        "10:30",
+        "12:30",
+        "14:30",
+        "16:30",
+        "18:30",
+        "20:30",
+        "22:30",
+        "00:30",
+        "02:30",
+        "04:30",
+        "06:30"
+      ],
+      "isSpecialTime": 0
+    },
+    {
+      "url": "https://www.edh.tw/article/30906",
+      "fileName": "Bonding_Report",
+      "folderPath": ".\\Report",
+      "time": [
+        "15:00",
+        "15:02"
+      ],
+      "isSpecialTime": 1
+    }
+  ]
+}
