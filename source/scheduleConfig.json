@@ -17,18 +17,16 @@
         "02:30",
         "04:30",
         "06:30"
-      ],
-      "isSpecialTime": 0
+      ]
     },
     {
       "url": "https://www.edh.tw/article/30906",
       "fileName": "Bonding_Report",
       "folderPath": ".\\Report",
       "time": [
-        "15:00",
-        "15:02"
-      ],
-      "isSpecialTime": 1
+        "10:00",
+        "10:02"
+      ]
     }
   ]
 }
