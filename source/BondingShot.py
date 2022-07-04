@@ -47,14 +47,28 @@ class BondingShot(BaseService):
         if(not os.path.isdir(f'{self._shareFolderPath}\{self._strDate}')):
             os.mkdir(f'{self._shareFolderPath}\{self._strDate}')
 
-        for i in range(1, 4):
-            _picName = f"Bonding_Output_{self._strTime}_{i}.png"
+        # for i in range(1, 4):
+        #     _picName = f"Bonding_Output_{self._strTime}_{i}.png"
+        #     self._picNameArray.append(_picName)
+        #     if(i == 1):
+        #         driver.get_screenshot_as_file(_picName)
+        #     else:
+        #         charts = driver.find_element_by_id(
+        #             "Chart5" if i == 2 else "Chart8")
+        #         action = ActionChains(driver)
+        #         action.move_to_element(charts).perform()
+        #         time.sleep(2)
+        #         driver.get_screenshot_as_file(_picName)
+        #     if(os.path.exists(f'.\{_picName}')):
+        #         shutil.move(f'.\{_picName}',
+        #                     f'{self._shareFolderPath}\{self._strDate}\{_picName}')
+        for idx, ele in enumerate(self._elementArray):
+            _picName = f"{self._docFileName}_{self._strTime}_{idx + 1}.png"
             self._picNameArray.append(_picName)
-            if(i == 1):
+            if((idx + 1) == 1):
                 driver.get_screenshot_as_file(_picName)
             else:
-                charts = driver.find_element_by_id(
-                    "Chart5" if i == 2 else "Chart8")
+                charts = driver.find_element_by_id(ele)
                 action = ActionChains(driver)
                 action.move_to_element(charts).perform()
                 time.sleep(2)

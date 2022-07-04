@@ -1,34 +1,47 @@
 import json
 import schedule
+import time
+import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from BondingShot import BondingShot
+from BaseService import BaseService
 
 
 def main():
+
+    _scheduler = BackgroundScheduler()
 
     _fileName = ""
     _folderPath = ""
     _url = ""
     _scheduleTime = []
-    
-    with open('D:\Repository\\autoScreenShot\\source\\scheduleConfig.json', encoding="utf-8") as f:
-        _config = json.load(f)
-        for config in _config['setting']:
-            _bondingShot = BondingShot()
 
-            for time in config['time']:
-                schedule.every().days.at(time).do(
-                    _bondingShot.do_screenShot(config['fileName'], config['folderPath'], config['url']))
+    with open('D:\\PyProj\\autoScreenShot\\source\\scheduleConfig.json', encoding="utf-8") as f:
+        _scheduleCfig = json.load(f)
+        for config in _scheduleCfig['setting']:
+            _className = eval('BondingShot')
+            _service = _className()
+            # _bondingShot = BondingShot()
+
+            for trigTime in config['time']:
+                _timeArray = str(trigTime).split(':')
+                trigger = CronTrigger(
+                    year="*", month="*", day="*", hour=_timeArray[0], minute=_timeArray[1], second="0")
+
+                _scheduler.add_job(_service.do_screenShot,
+                                   trigger=trigger,
+                                   args=[config['fileName'], config['folderPath'], config['url'], config['elements']])
+                # schedule.every().days.at(time).do(
+                #     _bondingShot.do_screenShot(config['fileName'], config['folderPath'], config['url'], config['elements']))
                 # schedule.every().days.at('10:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('12:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('14:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('16:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('18:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('20:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('22:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('00:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('02:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('04:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
-                # schedule.every().days.at('06:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
+
+            _scheduler.start()
+
+
+if __name__ == '__main__':
+
+    main()
 
     while True:
         # every daya at specific time_
@@ -36,6 +49,3 @@ def main():
         # print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         schedule.run_pending()
         time.sleep(1)
-
-if __name__ == '__main__':
-    main()

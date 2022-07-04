@@ -13,8 +13,9 @@ class BaseService():
         # f'Z:\\02-共用資料區(3G)\\03-戰情\\3F_Bonding\\Daily'
         self._shareFolderPath = ''
         self._url = ''
+        self._elementArray = []
 
-    def do_screenShot(self, fileName: str, folderPath: str, url: str):
+    def do_screenShot(self, fileName: str, folderPath: str, url: str, elements):
         self._strDate = self._nowTime.strftime('%Y%m%d')
         self._strTime = self._nowTime.strftime('%y%m%d%H%M%S')
         self._pngTime = self._nowTime.strftime('%y%m%d%H')
@@ -22,6 +23,7 @@ class BaseService():
         # f'Z:\\02-共用資料區(3G)\\03-戰情\\3F_Bonding\\Daily'
         self._shareFolderPath = folderPath
         self._url = url
+        self._elementArray = elements
 
         print(self._nowTime.strftime('%Y-%m-%d %H:%M:%S'))
 

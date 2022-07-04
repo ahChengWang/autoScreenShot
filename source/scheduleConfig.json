@@ -1,7 +1,8 @@
 {
-  "setting": [
+  "setting": [    
     {
-      "url": "http://10.132.23.123:81/Function/ENG1/Bonding_Output.aspx",
+      "service": "BondingShot",
+      "url": "http://10.132.133.164/Function/ENG1/Bonding_Output.aspx",
       "fileName": "Bonding_Report",
       "folderPath": "Z:\\02-共用資料區(3G)\\03-戰情\\3F_Bonding\\Daily",
       "time": [
@@ -17,16 +18,18 @@
         "02:30",
         "04:30",
         "06:30"
-      ]
+      ],
+      "elements" :["Chart1","Chart5","Chart8"]
     },
     {
-      "url": "https://www.edh.tw/article/30906",
+      "service": "BondingShot",
+      "url": "https://docs.python.org/zh-tw/3.7/tutorial/venv.html",
       "fileName": "Bonding_Report",
       "folderPath": ".\\Report",
       "time": [
-        "10:00",
-        "10:02"
-      ]
+        "17:17"
+      ],
+      "elements" :["introduction","creating-virtual-environments","managing-packages-with-pip"]
     }
   ]
 }
