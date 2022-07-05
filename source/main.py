@@ -17,13 +17,17 @@ def main():
     _url = ""
     _scheduleTime = []
 
-    with open('D:\\PyProj\\autoScreenShot\\source\\scheduleConfig.json', encoding="utf-8") as f:
+    # 讀取設定檔
+    with open('.\\scheduleConfig.json', encoding="utf-8") as f:
         _scheduleCfig = json.load(f)
+        # 依序處理
         for config in _scheduleCfig['setting']:
+            # new 要執行的 py
             _className = eval('BondingShot')
             _service = _className()
             # _bondingShot = BondingShot()
 
+            # 依據時間設定排程
             for trigTime in config['time']:
                 _timeArray = str(trigTime).split(':')
                 trigger = CronTrigger(

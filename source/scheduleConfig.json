@@ -1,5 +1,5 @@
 {
-  "setting": [    
+  "setting": [
     {
       "service": "BondingShot",
       "url": "http://10.132.133.164/Function/ENG1/Bonding_Output.aspx",
@@ -19,7 +19,11 @@
         "04:30",
         "06:30"
       ],
-      "elements" :["Chart1","Chart5","Chart8"]
+      "elements": [
+        "Chart1",
+        "Chart5",
+        "Chart8"
+      ]
     },
     {
       "service": "BondingShot",
@@ -29,7 +33,11 @@
       "time": [
         "17:17"
       ],
-      "elements" :["introduction","creating-virtual-environments","managing-packages-with-pip"]
+      "elements": [
+        "introduction",
+        "creating-virtual-environments",
+        "managing-packages-with-pip"
+      ]
     }
   ]
 }

@@ -4,7 +4,7 @@ import datetime
 class BaseService():
 
     def __init__(self) -> None:
-        self._nowTime = datetime.datetime.now()
+        self._nowTime = datetime
         self._strDate = ''
         self._strTime = ''
         self._pngTime = ''
@@ -16,6 +16,7 @@ class BaseService():
         self._elementArray = []
 
     def do_screenShot(self, fileName: str, folderPath: str, url: str, elements):
+        self._nowTime = datetime.datetime.now()
         self._strDate = self._nowTime.strftime('%Y%m%d')
         self._strTime = self._nowTime.strftime('%y%m%d%H%M%S')
         self._pngTime = self._nowTime.strftime('%y%m%d%H')
@@ -24,8 +25,6 @@ class BaseService():
         self._shareFolderPath = folderPath
         self._url = url
         self._elementArray = elements
-
-        print(self._nowTime.strftime('%Y-%m-%d %H:%M:%S'))
 
         self.do_action()
 
