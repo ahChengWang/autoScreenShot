@@ -12,11 +12,6 @@ def main():
 
     _scheduler = BackgroundScheduler()
 
-    _fileName = ""
-    _folderPath = ""
-    _url = ""
-    _scheduleTime = []
-
     # 讀取設定檔
     with open('.\\scheduleConfig.json', encoding="utf-8") as f:
         _scheduleCfig = json.load(f)
