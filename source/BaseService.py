@@ -14,8 +14,10 @@ class BaseService():
         self._shareFolderPath = ''
         self._url = ''
         self._elementArray = []
+        self._zoom = ''
 
-    def do_screenShot(self, fileName: str, folderPath: str, url: str, elements):
+    def do_screenShot(self, fileName: str, folderPath: str, url: str, elements: list, zoom: str):
+        self.__init__()
         self._nowTime = datetime.datetime.now()
         self._strDate = self._nowTime.strftime('%Y%m%d')
         self._strTime = self._nowTime.strftime('%y%m%d%H%M%S')
@@ -25,6 +27,7 @@ class BaseService():
         self._shareFolderPath = folderPath
         self._url = url
         self._elementArray = elements
+        self._zoom = zoom
 
         self.do_action()
 

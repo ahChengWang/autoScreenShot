@@ -30,17 +30,22 @@ def main():
 
                 _scheduler.add_job(_service.do_screenShot,
                                    trigger=trigger,
-                                   args=[config['fileName'], config['folderPath'], config['url'], config['elements']])
+                                   args=[config['fileName'], config['folderPath'], config['url'], config['elements'], config['zoom']])
                 # schedule.every().days.at(time).do(
                 #     _bondingShot.do_screenShot(config['fileName'], config['folderPath'], config['url'], config['elements']))
                 # schedule.every().days.at('10:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
 
-            _scheduler.start()
+        _scheduler.start()
 
 
 if __name__ == '__main__':
 
     main()
+
+    # # 測試段落
+    # _bondingShot = BondingShot()
+    # _bondingShot.do_screenShot('Bonding_Report', '.\\Report', 'https://docs.python.org/zh-tw/3.7/tutorial/venv.html', 
+    # ["introduction","creating-virtual13543-environments","managing-packages-with-pip"],"0.5")
 
     while True:
         # every daya at specific time_

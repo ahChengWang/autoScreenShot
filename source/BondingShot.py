@@ -9,6 +9,8 @@ from docx import Document
 from docx.shared import Cm
 from docx.enum.section import WD_ORIENT
 from BaseService import BaseService  # 處理文件的直向/橫向
+from PIL import Image
+from selenium.common.exceptions import NoSuchElementException
 
 
 class BondingShot(BaseService):
@@ -29,16 +31,12 @@ class BondingShot(BaseService):
 
         options = webdriver.ChromeOptions()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        driver = webdriver.Chrome(
-            executable_path=".\\Driver\\chromedriver.exe", chrome_options=options)
-        # driver = webdriver.Chrome(executable_path=".\\chromedriver_win32_102.0.5005.61\\chromedriver.exe", chrome_options=options)
+        driver = webdriver.Chrome(executable_path=".\\Driver\\chromedriver.exe", chrome_options=options)
         driver.get('chrome://settings/')
-        driver.execute_script('chrome.settingsPrivate.setDefaultZoom(0.88);')
+        driver.execute_script(F"chrome.settingsPrivate.setDefaultZoom({self._zoom});")
         driver.get(self._url)
         # driver.get("http://10.132.133.164/Function/ENG1/Bonding_Output.aspx") # 3F Bonding
         # driver.get("http://10.132.23.123:81/Function/ENG1/Bonding_Output.aspx") # 3F Bonding from 中控
-
-        # driver.get("https://www.edh.tw/article/30906") # 測試
 
         driver.fullscreen_window()
 
@@ -47,37 +45,29 @@ class BondingShot(BaseService):
         if(not os.path.isdir(f'{self._shareFolderPath}\{self._strDate}')):
             os.mkdir(f'{self._shareFolderPath}\{self._strDate}')
 
-        # for i in range(1, 4):
-        #     _picName = f"Bonding_Output_{self._strTime}_{i}.png"
-        #     self._picNameArray.append(_picName)
-        #     if(i == 1):
-        #         driver.get_screenshot_as_file(_picName)
-        #     else:
-        #         charts = driver.find_element_by_id(
-        #             "Chart5" if i == 2 else "Chart8")
-        #         action = ActionChains(driver)
-        #         action.move_to_element(charts).perform()
-        #         time.sleep(2)
-        #         driver.get_screenshot_as_file(_picName)
-        #     if(os.path.exists(f'.\{_picName}')):
-        #         shutil.move(f'.\{_picName}',
-        #                     f'{self._shareFolderPath}\{self._strDate}\{_picName}')
         for idx, ele in enumerate(self._elementArray):
-            _picName = f"{self._docFileName}_{self._strTime}_{idx + 1}.png"
-            self._picNameArray.append(_picName)
+            _picName = f"{self._docFileName}_{self._strTime}_{idx + 1}.png"            
             if((idx + 1) == 1):
                 driver.get_screenshot_as_file(_picName)
             else:
-                charts = driver.find_element_by_id(ele)
-                action = ActionChains(driver)
-                action.move_to_element(charts).perform()
-                time.sleep(2)
-                driver.get_screenshot_as_file(_picName)
+                try:
+                    # Handle element not found
+                    charts = driver.find_element_by_id(ele)
+                    action = ActionChains(driver)
+                    action.move_to_element(charts).perform()
+                    time.sleep(2)
+                    driver.get_screenshot_as_file(_picName)
+                except NoSuchElementException:                    
+                    continue
+
+            self._picNameArray.append(_picName)
             if(os.path.exists(f'.\{_picName}')):
                 shutil.move(f'.\{_picName}',
                             f'{self._shareFolderPath}\{self._strDate}\{_picName}')
 
         driver.quit()
+
+        self.do_spell()
 
         # region local test (截圖插入 word 轉成 PDF)
 
@@ -126,3 +116,19 @@ class BondingShot(BaseService):
         source_doc.save(f'.\Report\\{_strDate}\\{_docFileName}.pdf')
         '''
         # endregion
+
+    def do_spell(self):
+
+        im = Image.open(
+            F'{self._shareFolderPath}\{self._strDate}\{self._picNameArray[0]}')  # 開啟圖片
+        xsize, ysize = im.size
+        # 產生一張全黑圖片, 大小 x:長與截圖相同 y:長乘上截圖數量
+        bg = Image.new('RGB', (xsize, ysize*len(self._picNameArray)), '#000000')
+
+        for i, ele in enumerate(self._picNameArray):
+            # 開啟圖片
+            img = Image.open(F'{self._shareFolderPath}\{self._strDate}\{ele}') 
+            # 貼上圖片 左上座標(0, 0)
+            bg.paste(img, (0, i*ysize))
+
+        bg.save(F'{self._shareFolderPath}\{self._strDate}\{self._docFileName}_{self._pngTime}.png')
