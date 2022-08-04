@@ -23,7 +23,9 @@
         "Chart1",
         "Chart5",
         "Chart8"
-      ]
+      ],
+      "zoom": "0.88",
+      "rotationZoom": "0.56"
     },
     {
       "service": "BondingShot",
@@ -37,7 +39,9 @@
         "introduction",
         "creating-virtual-environments",
         "managing-packages-with-pip"
-      ]
+      ],
+      "zoom": "0.88",
+      "rotationZoom": "0.56"
     }
   ]
 }

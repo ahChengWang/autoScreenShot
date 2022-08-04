@@ -6,6 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from BondingShot import BondingShot
 from BaseService import BaseService
+import rotatescreen
 
 
 def main():
@@ -30,7 +31,7 @@ def main():
 
                 _scheduler.add_job(_service.do_screenShot,
                                    trigger=trigger,
-                                   args=[config['fileName'], config['folderPath'], config['url'], config['elements'], config['zoom']])
+                                   args=[config['fileName'], config['folderPath'], config['url'], config['elements'], config['zoom'], config['rotationZoom']])
                 # schedule.every().days.at(time).do(
                 #     _bondingShot.do_screenShot(config['fileName'], config['folderPath'], config['url'], config['elements']))
                 # schedule.every().days.at('10:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
@@ -39,13 +40,13 @@ def main():
 
 
 if __name__ == '__main__':
-
+    
     main()
 
     # # 測試段落
     # _bondingShot = BondingShot()
-    # _bondingShot.do_screenShot('Bonding_Report', '.\\Report', 'https://docs.python.org/zh-tw/3.7/tutorial/venv.html', 
-    # ["introduction","creating-virtual13543-environments","managing-packages-with-pip"],"0.5")
+    # _bondingShot.do_screenShot('Bonding_Report', '.\\Report', 'http://10.132.23.155:81/Function/ENG1/Bonding_Output.aspx', 
+    # ["introduction","creating-virtual13543-environments","managing-packages-with-pip"],"0.88","0.56")
 
     while True:
         # every daya at specific time_
