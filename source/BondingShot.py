@@ -1,5 +1,8 @@
+from ast import Try
 from genericpath import isfile
+from logging import exception
 from multiprocessing.dummy import Array
+from xmlrpc.client import Boolean
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
@@ -42,16 +45,13 @@ class BondingShot(BaseService):
         _chartCnt = driver.find_elements_by_xpath(
             "//img[@style='height:230px;width:480px;border-width:0px;Position:absolute;top:10px;left:5px;']")
 
+        # 新增本日資料夾
         if(not os.path.isdir(f'{self._shareFolderPath}\{self._strDate}')):
             os.mkdir(f'{self._shareFolderPath}\{self._strDate}')
 
         # 小於7個站點, 顯示調整為直向, 截一張圖
         if len(_chartCnt) <= 7:
-            driver.get('chrome://settings/')
-            driver.execute_script(
-                F"chrome.settingsPrivate.setDefaultZoom({self._rotationZoom});")
-            driver.get(self._url)
-            driver.fullscreen_window()
+            self.browser_setting(driver, self._rotationZoom)
 
             screen = rotatescreen.get_primary_display()
             start_pos = screen.current_orientation
@@ -62,9 +62,7 @@ class BondingShot(BaseService):
             _picName = f"{self._docFileName}_{self._pngTime}.png"
             driver.get_screenshot_as_file(_picName)
 
-            if(os.path.exists(f'.\{_picName}')):
-                shutil.move(f'.\{_picName}',
-                            f'{self._shareFolderPath}\{self._strDate}\{_picName}')
+            self.move_shot_pic(_picName)
 
             driver.quit()
 
@@ -73,17 +71,17 @@ class BondingShot(BaseService):
 
         # 大於7個站點, 橫向顯示, 分區截圖再合併
         else:
-            driver.get('chrome://settings/')
-            driver.execute_script(
-                F"chrome.settingsPrivate.setDefaultZoom({self._zoom});")
-            driver.get(self._url)
-            driver.fullscreen_window()
+            self.browser_setting(driver, self._zoom)
 
-            elementArray = ["Chart1", "Chart5", "Chart8",
+            elementArray = ["Chart1", "Chart4", "Chart7",
                             "Chart" + str(len(_chartCnt) - 1)]
+
             for idx, ele in enumerate(elementArray):
                 _picName = f"{self._docFileName}_{self._strTime}_t{idx + 1}.png"
                 if((idx + 1) == 1):
+                    # 將滾動條拖到最底部
+                    js = F"var action=document.documentElement.scrollTop={self._scrollTop}"
+                    driver.execute_script(js)
                     driver.get_screenshot_as_file(_picName)
                 else:
                     try:
@@ -97,14 +95,14 @@ class BondingShot(BaseService):
                         continue
 
                 self._picNameArray.append(_picName)
-                
-                time.sleep(1)
-                if(os.path.exists(f'.\{_picName}')):
-                    shutil.move(f'.\{_picName}',
-                                f'{self._shareFolderPath}\{self._strDate}\{_picName}')
+
+                # time.sleep(1)
+                # if(os.path.exists(f'.\{_picName}')):
+                #     shutil.move(f'.\{_picName}',
+                #                 f'{self._shareFolderPath}\{self._strDate}\{_picName}')
 
             driver.quit()
-            
+
             time.sleep(1)
 
             self.do_spell()
@@ -157,33 +155,74 @@ class BondingShot(BaseService):
             '''
             # endregion
 
+    """
+    設定瀏覽器參數
+    """
+    def browser_setting(self, initDriver: webdriver.Chrome, zoom: int) -> None:
+        initDriver.get('chrome://settings/')
+        initDriver.execute_script(
+            F"chrome.settingsPrivate.setDefaultZoom({zoom});")
+        initDriver.get(self._url)
+        initDriver.fullscreen_window()
+
+    """
+    移動圖片至MApp發送資料夾
+    """
+    def move_shot_pic(self, pinName: str) -> None:
+        try:
+            time.sleep(1)
+            if(os.path.exists(f'.\{pinName}')):
+                shutil.move(f'.\{pinName}',
+                            f'{self._shareFolderPath}\{self._strDate}\{pinName}')
+        except:
+            if(os.path.exists(f'.\{pinName}')):
+                shutil.move(f'.\{pinName}',
+                            f'{self._shareFolderPath}\{self._strDate}\{pinName}')
+    
+    """
+    截圖數量判斷要兩兩合併或直接合併成一張
+    """
     def do_spell(self):
 
+        # 兩張以上的偶數張數, 兩兩合併為一張新圖, 暫解全部合併圖檔過大上傳模糊問題
         if len(self._picNameArray) > 2 and len(self._picNameArray) % 2 == 0:
             for i in range(0, len(self._picNameArray), 2):
                 self.do_process(
                     [self._picNameArray[i], self._picNameArray[i+1]], i+1)
+        else:
+            self.do_process(self._picNameArray, 1)
 
+    """
+    合併截圖
+    """
     def do_process(self, picArray: list, cnt: int):
 
-        im = Image.open(
-            F'{self._shareFolderPath}\{self._strDate}\{picArray[0]}')  # 開啟圖片
-        xsize, ysize = im.size
-        # 產生一張全黑圖片, 大小 x:長與截圖相同 y:長乘上截圖數量
-        bg = Image.new('RGB', (xsize, ysize*len(picArray)), '#000000')
-        im.close()
+        try:
+            im = Image.open(F'.\{picArray[0]}')  # 開啟圖片
+            xsize, ysize = im.size
+            # 產生一張全黑圖片, 大小 x:長與截圖相同 y:長乘上截圖數量
+            bg = Image.new('RGB', (xsize, ysize*len(picArray)), '#000000')
+            im.close()
 
-        for i, ele in enumerate(picArray):
-            # 開啟圖片
-            img = Image.open(F'{self._shareFolderPath}\{self._strDate}\{ele}')
-            # 貼上圖片 左上座標(0, 0)
-            bg.paste(img, (0, i*ysize))
-            img.close()
+            for i, ele in enumerate(picArray):
+                # 開啟圖片
+                img = Image.open(F'.\{ele}')
+                # 貼上圖片 左上座標(0, 0)
+                bg.paste(img, (0, i*ysize))
+                img.close()
+            
+            # 因有機率會因權限問題會失敗, 故再重試一次
+            try:
+                bg.save(
+                    F'{self._shareFolderPath}\{self._strDate}\{self._docFileName}_{self._pngTime}_{str(cnt)}.png')
+            except:
+                bg.save(
+                    F'{self._shareFolderPath}\{self._strDate}\{self._docFileName}_{self._pngTime}_{str(cnt)}.png')
 
-        bg.save(F'{self._shareFolderPath}\{self._strDate}\{self._docFileName}_{self._pngTime}_{str(cnt)}.png')
+            # 刪除已合併截圖
+            for tmp in picArray:
+                if os.path.isfile(F'.\{tmp}'):
+                    os.remove(F'.\{tmp}')
 
-        for tmp in picArray:
-            if os.path.isfile(F'{self._shareFolderPath}\{self._strDate}\{tmp}'):
-                os.remove(F'{self._shareFolderPath}\{self._strDate}\{tmp}')
-
-
+        except Exception as ex:
+            print(str(ex))

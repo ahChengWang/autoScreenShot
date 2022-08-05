@@ -16,8 +16,9 @@ class BaseService():
         self._elementArray = []
         self._zoom = ''
         self._rotationZoom = ''
+        self._scrollTop = 0
 
-    def do_screenShot(self, fileName: str, folderPath: str, url: str, elements: list, zoom: str, rotationZoom: str):
+    def do_screenShot(self, fileName: str, folderPath: str, url: str, elements: list, zoom: str, rotationZoom: str, scrollTop: int):
         self.__init__()
         self._nowTime = datetime.datetime.now()
         self._strDate = self._nowTime.strftime('%Y%m%d')
@@ -30,6 +31,7 @@ class BaseService():
         self._elementArray = elements
         self._zoom = zoom
         self._rotationZoom = rotationZoom
+        self._scrollTop = scrollTop
 
         self.do_action()
 
