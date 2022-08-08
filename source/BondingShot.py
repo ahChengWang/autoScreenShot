@@ -49,13 +49,16 @@ class BondingShot(BaseService):
         if(not os.path.isdir(f'{self._shareFolderPath}\{self._strDate}')):
             os.mkdir(f'{self._shareFolderPath}\{self._strDate}')
 
+        screen = rotatescreen.get_primary_display()
+        start_pos = screen.current_orientation
+
+        if start_pos != 0:
+            screen.rotate_to(0)
+
         # 小於7個站點, 顯示調整為直向, 截一張圖
         if len(_chartCnt) <= 7:
             self.browser_setting(driver, self._rotationZoom)
-
-            screen = rotatescreen.get_primary_display()
-            start_pos = screen.current_orientation
-
+            
             pos = abs((start_pos - 90) % 360)
             screen.rotate_to(pos)
 
@@ -66,7 +69,7 @@ class BondingShot(BaseService):
 
             driver.quit()
 
-            pos = abs((start_pos - 360) % 360)
+            pos = abs((pos + 90) % 360)
             screen.rotate_to(pos)
 
         # 大於7個站點, 橫向顯示, 分區截圖再合併
