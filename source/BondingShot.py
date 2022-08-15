@@ -36,9 +36,10 @@ class BondingShot(BaseService):
                     shutil.rmtree(f'{self._shareFolderPath}\{dirName}')
 
         options = webdriver.ChromeOptions()
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        driver = webdriver.Chrome(
-            executable_path=".\\Driver\\chromedriver.exe", chrome_options=options)
+        exclude = ['enable-logging','enable-automation', 'ignore-certificate-errors'] # 停用 print log、關閉"正受到自動測試軟件的控製"訊息、忽略憑證錯誤
+        options.add_experimental_option('excludeSwitches', exclude)
+        # options.add_argument('--headless')
+        driver = webdriver.Chrome(executable_path=".\\Driver\\chromedriver.exe", chrome_options=options)
         driver.get(self._url)
 
         # 計算分時看板站點圖表數量
