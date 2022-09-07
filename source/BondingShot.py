@@ -36,10 +36,9 @@ class BondingShot(BaseService):
                     shutil.rmtree(f'{self._shareFolderPath}\{dirName}')
 
         options = webdriver.ChromeOptions()
-        exclude = ['enable-logging','enable-automation', 'ignore-certificate-errors'] # 停用 print log、關閉"正受到自動測試軟件的控製"訊息、忽略憑證錯誤
-        options.add_experimental_option('excludeSwitches', exclude)
-        # options.add_argument('--headless')
-        driver = webdriver.Chrome(executable_path=".\\Driver\\chromedriver.exe", chrome_options=options)
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        driver = webdriver.Chrome(
+            executable_path=".\\Driver\\chromedriver.exe", chrome_options=options)
         driver.get(self._url)
 
         # 計算分時看板站點圖表數量
@@ -59,7 +58,7 @@ class BondingShot(BaseService):
         # 小於7個站點, 顯示調整為直向, 截一張圖
         if len(_chartCnt) <= 7:
             self.browser_setting(driver, self._rotationZoom)
-            
+
             pos = abs((start_pos - 90) % 360)
             screen.rotate_to(pos)
 
@@ -77,8 +76,8 @@ class BondingShot(BaseService):
         else:
             self.browser_setting(driver, self._zoom)
 
-            elementArray = ["Chart1", "Chart4", "Chart7",
-                            "Chart" + str(len(_chartCnt) - 1)]
+            elementArray = ["Chart1", "Chart4", "Chart7", "Chart10", "Chart13"]
+            # "Chart" + str(len(_chartCnt) - 1)]
 
             for idx, ele in enumerate(elementArray):
                 _picName = f"{self._docFileName}_{self._strTime}_t{idx + 1}.png"
@@ -162,6 +161,7 @@ class BondingShot(BaseService):
     """
     設定瀏覽器參數
     """
+
     def browser_setting(self, initDriver: webdriver.Chrome, zoom: int) -> None:
         initDriver.get('chrome://settings/')
         initDriver.execute_script(
@@ -172,6 +172,7 @@ class BondingShot(BaseService):
     """
     移動圖片至MApp發送資料夾
     """
+
     def move_shot_pic(self, pinName: str) -> None:
         try:
             time.sleep(1)
@@ -182,23 +183,35 @@ class BondingShot(BaseService):
             if(os.path.exists(f'.\{pinName}')):
                 shutil.move(f'.\{pinName}',
                             f'{self._shareFolderPath}\{self._strDate}\{pinName}')
-    
+
     """
     截圖數量判斷要兩兩合併或直接合併成一張
     """
+
     def do_spell(self):
 
         # 兩張以上的偶數張數, 兩兩合併為一張新圖, 暫解全部合併圖檔過大上傳模糊問題
-        if len(self._picNameArray) > 2 and len(self._picNameArray) % 2 == 0:
-            for i in range(0, len(self._picNameArray), 2):
-                self.do_process(
-                    [self._picNameArray[i], self._picNameArray[i+1]], i+1)
+        # if len(self._picNameArray) > 2 and len(self._picNameArray) % 2 == 0:
+        #     for i in range(0, len(self._picNameArray), 2):
+        #         self.do_process(
+        #             [self._picNameArray[i], self._picNameArray[i+1]], i+1)
+        # else:
+        #     self.do_process(self._picNameArray, 1)
+        if len(self._picNameArray) >= 5:
+            self.do_process(
+                [self._picNameArray[0], self._picNameArray[1], self._picNameArray[2]], 1)
+            self.do_process([self._picNameArray[3], self._picNameArray[4]], 3)
+        # elif len(self._picNameArray) > 2 and len(self._picNameArray) % 2 == 0:
+        #     for i in range(0, len(self._picNameArray), 2):
+        #         self.do_process(
+        #             [self._picNameArray[i], self._picNameArray[i+1]], i+1)
         else:
             self.do_process(self._picNameArray, 1)
 
     """
     合併截圖
     """
+
     def do_process(self, picArray: list, cnt: int):
 
         try:
@@ -214,7 +227,7 @@ class BondingShot(BaseService):
                 # 貼上圖片 左上座標(0, 0)
                 bg.paste(img, (0, i*ysize))
                 img.close()
-            
+
             # 因有機率會因權限問題會失敗, 故再重試一次
             try:
                 bg.save(

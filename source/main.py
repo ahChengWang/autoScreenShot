@@ -11,7 +11,7 @@ import rotatescreen
 
 def main():
 
-    _scheduler = BackgroundScheduler()
+    _scheduleJob = BackgroundScheduler()
 
     # 讀取設定檔
     with open('.\\scheduleConfig.json', encoding="utf-8") as f:
@@ -29,14 +29,13 @@ def main():
                 trigger = CronTrigger(
                     year="*", month="*", day="*", hour=_timeArray[0], minute=_timeArray[1], second="0")
 
-                _scheduler.add_job(_service.do_screenShot,
+                _scheduleJob.add_job(_service.do_screenShot,
                                    trigger=trigger,
-                                   args=[config['fileName'], config['folderPath'], config['url'], config['elements'], config['zoom'], config['rotationZoom'], config['scrollTop']])
-                # schedule.every().days.at(time).do(
-                #     _bondingShot.do_screenShot(config['fileName'], config['folderPath'], config['url'], config['elements']))
-                # schedule.every().days.at('10:30').do(BaseService.do_screenShot(schedule['fileName'], _folderPath, _url))
+                                   args=[config['fileName'], config['folderPath'], config['url'], config['elements'], config['zoom'], config['rotationZoom'], config['scrollTop']],
+                                   id=F"Job_{_timeArray[0]}{_timeArray[1]}")
+                # _job.remove()
 
-        _scheduler.start()
+        _scheduleJob.start()
 
 
 if __name__ == '__main__':
