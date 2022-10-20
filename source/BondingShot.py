@@ -56,7 +56,7 @@ class BondingShot(BaseService):
             screen.rotate_to(0)
 
         # 小於7個站點, 顯示調整為直向, 截一張圖
-        if len(_chartCnt) <= 7:
+        if len(_chartCnt) <= 8:
             self.browser_setting(driver, self._rotationZoom)
 
             pos = abs((start_pos - 90) % 360)
@@ -76,10 +76,9 @@ class BondingShot(BaseService):
         else:
             self.browser_setting(driver, self._zoom)
 
-            elementArray = ["Chart1", "Chart4", "Chart7", "Chart10", "Chart13"]
             # "Chart" + str(len(_chartCnt) - 1)]
 
-            for idx, ele in enumerate(elementArray):
+            for idx, ele in enumerate(self._elementArray):
                 _picName = f"{self._docFileName}_{self._strTime}_t{idx + 1}.png"
                 if((idx + 1) == 1):
                     # 將滾動條拖到最底部
